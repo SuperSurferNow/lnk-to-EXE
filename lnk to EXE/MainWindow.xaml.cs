@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Microsoft.Win32;
 using WinForms = System.Windows.Forms;
 
@@ -255,7 +256,13 @@ namespace lnk_to_EXE
                 return;
 
             item.CustomIconPath = null;
-            var originalIcon = IconExtractor.ExtractIcon(item.OriginalInfo.IconPath, item.OriginalInfo.IconIndex);
+            
+            // Try to extract icon from IconPath or fall back to target executable
+            string iconPath = !string.IsNullOrEmpty(item.OriginalInfo.IconPath) 
+                ? item.OriginalInfo.IconPath 
+                : item.OriginalInfo.TargetPath;
+                
+            var originalIcon = IconExtractor.ExtractIcon(iconPath, item.OriginalInfo.IconIndex);
             item.IconSource = originalIcon;
             IconPreview.Source = originalIcon;
             item.HasChanges = true;
@@ -414,6 +421,49 @@ namespace lnk_to_EXE
             AddFolderButton.IsEnabled = true;
             ClearAllButton.IsEnabled = true;
             UpdateBuildButtons();
+        }
+
+        #endregion
+
+        #region Theme
+
+        private void DarkModeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            bool isDarkMode = DarkModeToggle.IsChecked == true;
+            ApplyTheme(isDarkMode);
+            DarkModeToggle.Content = isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode";
+        }
+
+        private void ApplyTheme(bool isDarkMode)
+        {
+            if (isDarkMode)
+            {
+                // Dark mode colors
+                Resources["WindowBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 30, 30));
+                Resources["TextColor"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(220, 220, 220));
+                Resources["BorderColor"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(60, 60, 60));
+                Resources["SecondaryTextColor"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(150, 150, 150));
+                Resources["GroupBoxBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(40, 40, 40));
+                Resources["ControlBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(45, 45, 45));
+                Resources["DisabledBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(55, 55, 55));
+                Resources["ListItemBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(35, 35, 35));
+                
+                Background = (SolidColorBrush)Resources["WindowBackground"];
+            }
+            else
+            {
+                // Light mode colors
+                Resources["WindowBackground"] = new SolidColorBrush(Colors.White);
+                Resources["TextColor"] = new SolidColorBrush(Colors.Black);
+                Resources["BorderColor"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(204, 204, 204));
+                Resources["SecondaryTextColor"] = new SolidColorBrush(Colors.Gray);
+                Resources["GroupBoxBackground"] = new SolidColorBrush(Colors.White);
+                Resources["ControlBackground"] = new SolidColorBrush(Colors.White);
+                Resources["DisabledBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(245, 245, 245));
+                Resources["ListItemBackground"] = new SolidColorBrush(Colors.White);
+                
+                Background = (SolidColorBrush)Resources["WindowBackground"];
+            }
         }
 
         #endregion

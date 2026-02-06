@@ -111,10 +111,14 @@ namespace lnk_to_EXE
             _arguments = info.Arguments;
             _workingDirectory = info.WorkingDirectory;
 
-            // Extract icon
+            // Extract icon - if no icon path specified, try to extract from target executable
             try
             {
-                _iconSource = IconExtractor.ExtractIcon(info.IconPath, info.IconIndex);
+                string iconPath = !string.IsNullOrEmpty(info.IconPath) 
+                    ? info.IconPath 
+                    : info.TargetPath;
+                    
+                _iconSource = IconExtractor.ExtractIcon(iconPath, info.IconIndex);
             }
             catch
             {

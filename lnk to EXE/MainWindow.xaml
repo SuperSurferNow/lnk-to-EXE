@@ -12,13 +12,43 @@
         DragLeave="Window_DragLeave">
     <Window.Resources>
         <local:NullToBoolConverter x:Key="NullToBoolConverter"/>
+        
+        <!-- Light Theme Colors -->
+        <SolidColorBrush x:Key="WindowBackground" Color="White"/>
+        <SolidColorBrush x:Key="TextColor" Color="Black"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#CCCCCC"/>
+        <SolidColorBrush x:Key="SecondaryTextColor" Color="Gray"/>
+        <SolidColorBrush x:Key="GroupBoxBackground" Color="White"/>
+        <SolidColorBrush x:Key="ControlBackground" Color="White"/>
+        <SolidColorBrush x:Key="DisabledBackground" Color="#F5F5F5"/>
+        <SolidColorBrush x:Key="ListItemBackground" Color="White"/>
+        
         <Style TargetType="GroupBox">
             <Setter Property="Padding" Value="10"/>
             <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Background" Value="{DynamicResource GroupBoxBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+        </Style>
+        
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+        </Style>
+        
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource ControlBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+        </Style>
+        
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="{DynamicResource ControlBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
         </Style>
     </Window.Resources>
     
-    <Grid Margin="20">
+    
+    <Grid Margin="20" Background="{DynamicResource WindowBackground}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -29,20 +59,30 @@
         </Grid.RowDefinitions>
 
         <!-- Action Buttons -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
-            <Button x:Name="AddFilesButton" Content="➕ Add Files..." Width="120" Height="35" 
-                    Click="AddFilesButton_Click" Margin="0,0,10,0"/>
-            <Button x:Name="AddFolderButton" Content="📁 Add Folder..." Width="120" Height="35" 
-                    Click="AddFolderButton_Click" Margin="0,0,10,0"/>
-            <Button x:Name="ClearAllButton" Content="🗑️ Clear All" Width="100" Height="35" 
-                    Click="ClearAllButton_Click" Margin="0,0,20,0"/>
-            <Button x:Name="RemoveSelectedButton" Content="➖ Remove Selected" Width="140" Height="35" 
-                    Click="RemoveSelectedButton_Click" IsEnabled="False"/>
-        </StackPanel>
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Button x:Name="AddFilesButton" Content="➕ Add Files..." Width="120" Height="35" 
+                        Click="AddFilesButton_Click" Margin="0,0,10,0"/>
+                <Button x:Name="AddFolderButton" Content="📁 Add Folder..." Width="120" Height="35" 
+                        Click="AddFolderButton_Click" Margin="0,0,10,0"/>
+                <Button x:Name="ClearAllButton" Content="🗑️ Clear All" Width="100" Height="35" 
+                        Click="ClearAllButton_Click" Margin="0,0,20,0"/>
+                <Button x:Name="RemoveSelectedButton" Content="➖ Remove Selected" Width="140" Height="35" 
+                        Click="RemoveSelectedButton_Click" IsEnabled="False"/>
+            </StackPanel>
+            
+            <ToggleButton Grid.Column="1" x:Name="DarkModeToggle" Width="120" Height="35"
+                          Content="🌙 Dark Mode" Click="DarkModeToggle_Click"/>
+        </Grid>
 
         <!-- Shortcut List with Drag-Drop Zone -->
-        <Border Grid.Row="1" BorderBrush="#CCCCCC" BorderThickness="2" 
-                Background="{Binding ElementName=ShortcutListBox, Path=Background}"
+        <Border Grid.Row="1" BorderBrush="{DynamicResource BorderColor}" BorderThickness="2" 
+                Background="{DynamicResource ControlBackground}"
                 x:Name="DropZoneBorder">
             <Grid>
                 <!-- Drop Zone Overlay -->
@@ -57,8 +97,8 @@
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="#DDDDDD" BorderThickness="1" Padding="8" Margin="2"
-                                    Background="White">
+                            <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" Padding="8" Margin="2"
+                                    Background="{DynamicResource ListItemBackground}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="40"/>
@@ -70,8 +110,10 @@
                                            Source="{Binding IconSource}" Margin="0,0,10,0"/>
 
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding FileName}" FontWeight="Bold" FontSize="13"/>
-                                        <TextBlock Text="{Binding TargetPath}" Foreground="Gray" 
+                                        <TextBlock Text="{Binding FileName}" FontWeight="Bold" FontSize="13" 
+                                                   Foreground="{DynamicResource TextColor}"/>
+                                        <TextBlock Text="{Binding TargetPath}" 
+                                                   Foreground="{DynamicResource SecondaryTextColor}" 
                                                    FontSize="11" TextTrimming="CharacterEllipsis"/>
                                     </StackPanel>
 
@@ -87,8 +129,8 @@
 
                 <!-- Empty State Message -->
                 <TextBlock x:Name="EmptyStateText" Text="📂 Add .lnk files or drag them here to begin"
-                           FontSize="16" Foreground="Gray" HorizontalAlignment="Center" 
-                           VerticalAlignment="Center" Visibility="Visible"/>
+                           FontSize="16" Foreground="{DynamicResource SecondaryTextColor}" 
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible"/>
             </Grid>
         </Border>
 
@@ -116,8 +158,8 @@
                 <!-- Icon Preview & Selection -->
                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="5" Margin="0,0,15,0">
                     <TextBlock Text="Icon Preview:" FontWeight="Bold" Margin="0,0,0,5"/>
-                    <Border BorderBrush="#CCCCCC" BorderThickness="1" Width="80" Height="80" 
-                            Background="White" Padding="5">
+                    <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" Width="80" Height="80" 
+                            Background="{DynamicResource ControlBackground}" Padding="5">
                         <Image x:Name="IconPreview" Stretch="Uniform"/>
                     </Border>
                     <Button x:Name="ChangeIconButton" Content="Change Icon..." Width="80" Height="25" 
@@ -148,7 +190,7 @@
                 <TextBlock Grid.Row="3" Grid.Column="1" Text="Icon Source:" FontWeight="Bold" 
                            VerticalAlignment="Center" Margin="0,0,0,8"/>
                 <TextBox Grid.Row="3" Grid.Column="2" x:Name="EditIconPathTextBox" Width="450" 
-                         IsReadOnly="True" Background="#F5F5F5" Margin="0,0,0,8"/>
+                         IsReadOnly="True" Background="{DynamicResource DisabledBackground}" Margin="0,0,0,8"/>
 
                 <!-- Test Launch Button -->
                 <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="TestLaunchButton" 
