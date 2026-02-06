@@ -1,0 +1,196 @@
+﻿<Window x:Class="lnk_to_EXE.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:lnk_to_EXE"
+        mc:Ignorable="d"
+        Title="LNK to EXE Converter v2.0" Height="700" Width="900"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        DragEnter="Window_DragEnter"
+        DragLeave="Window_DragLeave">
+    <Window.Resources>
+        <local:NullToBoolConverter x:Key="NullToBoolConverter"/>
+        <Style TargetType="GroupBox">
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="280"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+            <Button x:Name="AddFilesButton" Content="➕ Add Files..." Width="120" Height="35" 
+                    Click="AddFilesButton_Click" Margin="0,0,10,0"/>
+            <Button x:Name="AddFolderButton" Content="📁 Add Folder..." Width="120" Height="35" 
+                    Click="AddFolderButton_Click" Margin="0,0,10,0"/>
+            <Button x:Name="ClearAllButton" Content="🗑️ Clear All" Width="100" Height="35" 
+                    Click="ClearAllButton_Click" Margin="0,0,20,0"/>
+            <Button x:Name="RemoveSelectedButton" Content="➖ Remove Selected" Width="140" Height="35" 
+                    Click="RemoveSelectedButton_Click" IsEnabled="False"/>
+        </StackPanel>
+
+        <!-- Shortcut List with Drag-Drop Zone -->
+        <Border Grid.Row="1" BorderBrush="#CCCCCC" BorderThickness="2" 
+                Background="{Binding ElementName=ShortcutListBox, Path=Background}"
+                x:Name="DropZoneBorder">
+            <Grid>
+                <!-- Drop Zone Overlay -->
+                <Border x:Name="DropZoneOverlay" Background="#4000AA00" Visibility="Collapsed"
+                        BorderBrush="#00AA00" BorderThickness="3" CornerRadius="5">
+                    <TextBlock Text="📥 Drop .lnk files here" FontSize="24" FontWeight="Bold"
+                               Foreground="#00AA00" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- Shortcut List -->
+                <ListBox x:Name="ShortcutListBox" SelectionChanged="ShortcutListBox_SelectionChanged"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#DDDDDD" BorderThickness="1" Padding="8" Margin="2"
+                                    Background="White">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="40"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image Grid.Column="0" Width="32" Height="32" 
+                                           Source="{Binding IconSource}" Margin="0,0,10,0"/>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding FileName}" FontWeight="Bold" FontSize="13"/>
+                                        <TextBlock Text="{Binding TargetPath}" Foreground="Gray" 
+                                                   FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding StatusText}" Foreground="{Binding StatusColor}" 
+                                                   Margin="10,0" VerticalAlignment="Center" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Empty State Message -->
+                <TextBlock x:Name="EmptyStateText" Text="📂 Add .lnk files or drag them here to begin"
+                           FontSize="16" Foreground="Gray" HorizontalAlignment="Center" 
+                           VerticalAlignment="Center" Visibility="Visible"/>
+            </Grid>
+        </Border>
+
+        <!-- Selected Item Count -->
+        <TextBlock Grid.Row="2" x:Name="ItemCountText" Margin="0,10,0,10" 
+                   FontWeight="Bold" Foreground="DarkBlue"/>
+
+        <!-- Shortcut Editor Panel -->
+        <GroupBox Grid.Row="3" Header="Edit Selected Shortcut">
+            <Grid IsEnabled="{Binding ElementName=ShortcutListBox, Path=SelectedItem, 
+                              Converter={StaticResource NullToBoolConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Icon Preview & Selection -->
+                <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="5" Margin="0,0,15,0">
+                    <TextBlock Text="Icon Preview:" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <Border BorderBrush="#CCCCCC" BorderThickness="1" Width="80" Height="80" 
+                            Background="White" Padding="5">
+                        <Image x:Name="IconPreview" Stretch="Uniform"/>
+                    </Border>
+                    <Button x:Name="ChangeIconButton" Content="Change Icon..." Width="80" Height="25" 
+                            Margin="0,8,0,0" Click="ChangeIconButton_Click"/>
+                    <Button x:Name="ResetIconButton" Content="Reset" Width="80" Height="25" 
+                            Margin="0,5,0,0" Click="ResetIconButton_Click"/>
+                </StackPanel>
+
+                <!-- Target Path -->
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Target Path:" FontWeight="Bold" 
+                           VerticalAlignment="Center" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="0" Grid.Column="2" x:Name="EditTargetTextBox" Width="450" 
+                         TextChanged="EditField_Changed" Margin="0,0,0,8"/>
+
+                <!-- Arguments -->
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="Arguments:" FontWeight="Bold" 
+                           VerticalAlignment="Center" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="1" Grid.Column="2" x:Name="EditArgumentsTextBox" Width="450" 
+                         TextChanged="EditField_Changed" Margin="0,0,0,8"/>
+
+                <!-- Working Directory -->
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="Working Directory:" FontWeight="Bold" 
+                           VerticalAlignment="Center" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="2" Grid.Column="2" x:Name="EditWorkingDirTextBox" Width="450" 
+                         TextChanged="EditField_Changed" Margin="0,0,0,8"/>
+
+                <!-- Icon Path (Read-only) -->
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="Icon Source:" FontWeight="Bold" 
+                           VerticalAlignment="Center" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="3" Grid.Column="2" x:Name="EditIconPathTextBox" Width="450" 
+                         IsReadOnly="True" Background="#F5F5F5" Margin="0,0,0,8"/>
+
+                <!-- Test Launch Button -->
+                <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="TestLaunchButton" 
+                        Content="🚀 Test Launch Target" Height="35" Width="200" 
+                        HorizontalAlignment="Left" Click="TestLaunchButton_Click" Margin="0,10,0,0"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Output Options -->
+        <GroupBox Grid.Row="4" Header="Output Options">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Output Folder:" FontWeight="Bold" 
+                           VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Column="1" x:Name="OutputFolderTextBox" IsReadOnly="True" 
+                         VerticalContentAlignment="Center" Margin="0,0,10,0"/>
+                <Button Grid.Column="2" x:Name="BrowseOutputFolderButton" Content="Browse..." 
+                        Width="100" Height="30" Click="BrowseOutputFolderButton_Click"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Status & Build Actions -->
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" x:Name="StatusTextBlock" TextWrapping="Wrap" 
+                       Foreground="DarkBlue" VerticalAlignment="Center" Margin="0,0,15,0"/>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button x:Name="BuildSelectedButton" Content="🔨 Build Selected" Height="40" Width="140" 
+                        FontWeight="Bold" Click="BuildSelectedButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
+                <Button x:Name="BuildAllButton" Content="🔨 Build All" Height="40" Width="140" 
+                        FontWeight="Bold" Click="BuildAllButton_Click" IsEnabled="False"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
