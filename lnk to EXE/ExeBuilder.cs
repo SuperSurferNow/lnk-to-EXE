@@ -65,11 +65,9 @@ namespace lnk_to_EXE
 
                             Process.Start(startInfo);
                         }
-                        catch (Exception ex)
+                        catch
                         {
-                            Console.WriteLine($"Failed to launch target: {ex.Message}");
-                            Console.WriteLine("Press any key to exit...");
-                            Console.ReadKey();
+                            // Silent fail - this is a launcher, not a diagnostic tool
                         }
                     }
                 }
@@ -107,7 +105,7 @@ namespace lnk_to_EXE
                 syntaxTrees: new[] { syntaxTree },
                 references: references,
                 options: new CSharpCompilationOptions(
-                    OutputKind.ConsoleApplication,
+                    OutputKind.WindowsApplication,
                     optimizationLevel: OptimizationLevel.Release,
                     platform: Platform.AnyCpu));
 
