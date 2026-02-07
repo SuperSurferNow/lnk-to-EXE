@@ -1,8 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
-
-namespace lnk_to_EXE
+﻿namespace lnk_to_EXE
 {
     /// <summary>
     /// Interaction logic for App.xaml

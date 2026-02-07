@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -34,7 +33,7 @@ namespace lnk_to_EXE
                 {
                     var icon = Icon.FromHandle(hIcon);
                     var bitmap = icon.ToBitmap();
-                    
+
                     IntPtr hBitmap = bitmap.GetHbitmap();
                     try
                     {

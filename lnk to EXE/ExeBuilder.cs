@@ -1,11 +1,8 @@
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Drawing;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using System.Linq;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace lnk_to_EXE
 {
@@ -26,10 +23,10 @@ namespace lnk_to_EXE
             if (embedIcon)
             {
                 // Use icon from IconPath if specified, otherwise use target executable's icon
-                string iconPath = !string.IsNullOrEmpty(shortcut.IconPath) 
-                    ? shortcut.IconPath 
+                string iconPath = !string.IsNullOrEmpty(shortcut.IconPath)
+                    ? shortcut.IconPath
                     : shortcut.TargetPath;
-                
+
                 // Only try to embed if the icon source exists
                 if (File.Exists(iconPath))
                 {
@@ -79,12 +76,12 @@ namespace lnk_to_EXE
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
 
             string assemblyName = Path.GetRandomFileName();
-            
+
             // Use .NET Framework 4.x which is pre-installed on Windows
             string frameworkPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                 @"Microsoft.NET\Framework64\v4.0.30319");
-            
+
             // Fallback to 32-bit framework path if 64-bit not found
             if (!Directory.Exists(frameworkPath))
             {
@@ -92,7 +89,7 @@ namespace lnk_to_EXE
                     Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                     @"Microsoft.NET\Framework\v4.0.30319");
             }
-            
+
             var references = new[]
             {
                 MetadataReference.CreateFromFile(Path.Combine(frameworkPath, "mscorlib.dll")),
@@ -135,17 +132,17 @@ namespace lnk_to_EXE
 
                 // Extract icon to temporary .ico file
                 string tempIconPath = Path.Combine(Path.GetTempPath(), $"lnk2exe_{Guid.NewGuid()}.ico");
-                
+
                 try
                 {
                     // Extract and save icon as proper .ico file
                     if (ExtractIconToFile(iconPath, iconIndex, tempIconPath))
                     {
                         System.Diagnostics.Debug.WriteLine($"Icon extracted to temp file: {tempIconPath}");
-                        
+
                         // Embed the icon into the executable
                         EmbedIconResource(exePath, tempIconPath);
-                        
+
                         System.Diagnostics.Debug.WriteLine("? Icon embedding completed successfully!");
                     }
                     else
@@ -185,9 +182,9 @@ namespace lnk_to_EXE
                 // Extract all available icon sizes
                 IntPtr[] largeIcons = new IntPtr[1];
                 IntPtr[] smallIcons = new IntPtr[1];
-                
+
                 int count = ExtractIconEx(sourcePath, iconIndex, largeIcons, smallIcons, 1);
-                
+
                 if (count <= 0)
                 {
                     System.Diagnostics.Debug.WriteLine($"No icons found at index {iconIndex}");
@@ -196,7 +193,7 @@ namespace lnk_to_EXE
 
                 // Use large icon if available, otherwise small icon
                 IntPtr hIcon = largeIcons[0] != IntPtr.Zero ? largeIcons[0] : smallIcons[0];
-                
+
                 if (hIcon == IntPtr.Zero)
                 {
                     System.Diagnostics.Debug.WriteLine("Icon handle is null");
@@ -214,7 +211,7 @@ namespace lnk_to_EXE
                             icon.Save(fs);
                         }
                     }
-                    
+
                     return File.Exists(destPath) && new FileInfo(destPath).Length > 0;
                 }
                 finally
@@ -234,7 +231,7 @@ namespace lnk_to_EXE
         {
             // Read the icon file
             byte[] iconBytes = File.ReadAllBytes(iconPath);
-            
+
             if (iconBytes.Length < 6)
             {
                 System.Diagnostics.Debug.WriteLine("Invalid icon file - too small");

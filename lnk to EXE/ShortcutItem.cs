@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Windows.Media;
 using WpfBrush = System.Windows.Media.Brush;
 using WpfBrushes = System.Windows.Media.Brushes;
 
@@ -114,10 +113,10 @@ namespace lnk_to_EXE
             // Extract icon - if no icon path specified, try to extract from target executable
             try
             {
-                string iconPath = !string.IsNullOrEmpty(info.IconPath) 
-                    ? info.IconPath 
+                string iconPath = !string.IsNullOrEmpty(info.IconPath)
+                    ? info.IconPath
                     : info.TargetPath;
-                    
+
                 _iconSource = IconExtractor.ExtractIcon(iconPath, info.IconIndex);
             }
             catch

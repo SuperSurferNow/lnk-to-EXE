@@ -3,7 +3,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.Win32;
 using WinForms = System.Windows.Forms;
 
 namespace lnk_to_EXE
@@ -21,7 +20,7 @@ namespace lnk_to_EXE
             InitializeComponent();
             ShortcutListBox.ItemsSource = _shortcuts;
             _shortcuts.CollectionChanged += (s, e) => UpdateUI();
-            
+
             // Set default output folder
             OutputFolderTextBox.Text = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         }
@@ -110,7 +109,7 @@ namespace lnk_to_EXE
 
             if (addedCount > 0)
             {
-                StatusTextBlock.Text = $"Added {addedCount} shortcut(s)" + 
+                StatusTextBlock.Text = $"Added {addedCount} shortcut(s)" +
                     (failedCount > 0 ? $", {failedCount} failed" : "");
             }
         }
@@ -127,14 +126,14 @@ namespace lnk_to_EXE
             {
                 string[] files = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop);
                 var lnkFiles = files.Where(f => f.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase)).ToArray();
-                
+
                 if (lnkFiles.Length > 0)
                 {
                     AddShortcuts(lnkFiles);
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("No .lnk files found in dropped items.", "Invalid Files", 
+                    System.Windows.MessageBox.Show("No .lnk files found in dropped items.", "Invalid Files",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
@@ -244,7 +243,7 @@ namespace lnk_to_EXE
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show($"Failed to load icon: {ex.Message}", "Error", 
+                    System.Windows.MessageBox.Show($"Failed to load icon: {ex.Message}", "Error",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -256,12 +255,12 @@ namespace lnk_to_EXE
                 return;
 
             item.CustomIconPath = null;
-            
+
             // Try to extract icon from IconPath or fall back to target executable
-            string iconPath = !string.IsNullOrEmpty(item.OriginalInfo.IconPath) 
-                ? item.OriginalInfo.IconPath 
+            string iconPath = !string.IsNullOrEmpty(item.OriginalInfo.IconPath)
+                ? item.OriginalInfo.IconPath
                 : item.OriginalInfo.TargetPath;
-                
+
             var originalIcon = IconExtractor.ExtractIcon(iconPath, item.OriginalInfo.IconIndex);
             item.IconSource = originalIcon;
             IconPreview.Source = originalIcon;
@@ -351,7 +350,7 @@ namespace lnk_to_EXE
                     item.Status = ConversionStatus.Building;
                     StatusTextBlock.Text = $"Building: {item.FileName}...";
 
-                    string outputPath = Path.Combine(OutputFolderTextBox.Text, 
+                    string outputPath = Path.Combine(OutputFolderTextBox.Text,
                         Path.GetFileNameWithoutExtension(item.FileName) + ".exe");
 
                     var info = item.ToShortcutInfo();
@@ -447,7 +446,7 @@ namespace lnk_to_EXE
                 Resources["ControlBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(45, 45, 45));
                 Resources["DisabledBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(55, 55, 55));
                 Resources["ListItemBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(35, 35, 35));
-                
+
                 Background = (SolidColorBrush)Resources["WindowBackground"];
             }
             else
@@ -461,7 +460,7 @@ namespace lnk_to_EXE
                 Resources["ControlBackground"] = new SolidColorBrush(Colors.White);
                 Resources["DisabledBackground"] = new SolidColorBrush(System.Windows.Media.Color.FromRgb(245, 245, 245));
                 Resources["ListItemBackground"] = new SolidColorBrush(Colors.White);
-                
+
                 Background = (SolidColorBrush)Resources["WindowBackground"];
             }
         }
