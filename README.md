@@ -35,6 +35,15 @@ The output will be in: `bin\Release\net10.0-windows\win-x64\publish\`
 
 The single .exe file can be copied to any Windows system with .NET 10 runtime installed.
 
+### Startup Performance Optimizations
+The application includes several optimizations for faster startup:
+- **Splash Screen**: Displays instantly while the application loads, providing immediate user feedback
+- **ReadyToRun Compilation**: Pre-compiles the application to reduce JIT overhead at startup (30-50% faster startup)
+
+These optimizations are automatically applied when using the PortableWin64 publish profile.
+
+**Note**: The published executable will be larger (~26MB) due to ReadyToRun pre-compilation, but startup time will be significantly faster.
+
 ## Building from Source
 ```bash
 dotnet build -c Release

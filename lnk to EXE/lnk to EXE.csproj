@@ -15,10 +15,15 @@
     <DebugType>embedded</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <ApplicationIcon>app.ico</ApplicationIcon>
+    
+    <!-- ReadyToRun compilation for faster startup -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="app.ico" />
+    <SplashScreen Include="SplashScreen.png" />
   </ItemGroup>
 
   <ItemGroup>
