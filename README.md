@@ -49,7 +49,7 @@ dotnet build -c Release
 6. Your portable .exe files are ready!
 
 ## Icon Embedding
-**Current Status:** Icon embedding is temporarily disabled due to technical complexity.
+**Current Status:** Icon embedding is temporarily disabled due to _technical complexity._ (The code self-destruting every time I ask claude to fix it)
 
 The generated .exe files will use the default Windows executable icon for now. The executables work perfectly - they just won't have custom icons yet.
 
